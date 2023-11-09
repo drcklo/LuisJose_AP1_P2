@@ -1,7 +1,24 @@
 ﻿@page "/"
+@inject NotificationService notificationService
 
 <PageTitle>Index</PageTitle>
 
 <h1>Luis Jos&eacute; Paulino (2021-0513)</h1>
 
 <h3>Programaci&oacute;n Aplicada 1 2023-03</h3>
+
+<button @onclick="MostrarNotificacion" class="btn btn-success">Botón prueba</button>
+
+@code {
+	public void MostrarNotificacion()
+	{
+		var mensaje = new NotificationMessage
+			{
+				Severity = NotificationSeverity.Error,
+				Summary = "Notificacion de Ejemplo",
+				Detail = "Prueba notification service",
+				Duration = 4_000
+			};
+		notificationService.Notify(mensaje);
+	}
+}
