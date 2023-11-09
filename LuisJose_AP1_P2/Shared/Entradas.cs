@@ -11,7 +11,7 @@ namespace LuisJose_AP1_P2.Shared
 	public class Entradas
 	{
 		[Key]
-		public int EntradaId { get; set; }
+		public int EntradaID { get; set; }
 		public DateTime Fecha { get; set; } = DateTime.Now;
 
 		[Required(ErrorMessage = "El Concepto es un campo requerido")]
@@ -23,7 +23,7 @@ namespace LuisJose_AP1_P2.Shared
 		[Required(ErrorMessage = "Se requiere especificar la cantidad producida")]
 		public int CantidadProducida { get; set; }
 
-		[ForeignKey("EntradaId")]
+		[ForeignKey("EntradaID")]
 		public List<EntradasDetalle> entradasDetalle { get; set; } = new List<EntradasDetalle>();
 	}
 }
