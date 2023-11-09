@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LuisJose_AP1_P2.Shared
 {
-	internal class Entradas
+	public class Entradas
 	{
 		[Key]
 		public int EntradaId { get; set; }

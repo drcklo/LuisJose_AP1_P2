@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LuisJose_AP1_P2.Shared
 {
-	internal class Productos
+	public class Productos
 	{
 		[Key]
 		public int ProductoID { get; set; }
