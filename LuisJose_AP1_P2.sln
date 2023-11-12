@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuisJose_AP1_P2.Server", "LuisJose_AP1_P2\Server\LuisJose_AP1_P2.Server.csproj", "{78376A0F-9E95-4107-8BE3-D4D7C8D4AE4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LuisJose_AP1_P2.Server", "LuisJose_AP1_P2\Server\LuisJose_AP1_P2.Server.csproj", "{78376A0F-9E95-4107-8BE3-D4D7C8D4AE4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuisJose_AP1_P2.Client", "LuisJose_AP1_P2\Client\LuisJose_AP1_P2.Client.csproj", "{76D72D0A-AB66-43FF-852F-390C31AD5287}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LuisJose_AP1_P2.Client", "LuisJose_AP1_P2\Client\LuisJose_AP1_P2.Client.csproj", "{76D72D0A-AB66-43FF-852F-390C31AD5287}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuisJose_AP1_P2.Shared", "LuisJose_AP1_P2\Shared\LuisJose_AP1_P2.Shared.csproj", "{2B10B090-F23A-4CE3-A3AD-58122E68C2C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LuisJose_AP1_P2.Shared", "LuisJose_AP1_P2\Shared\LuisJose_AP1_P2.Shared.csproj", "{2B10B090-F23A-4CE3-A3AD-58122E68C2C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
