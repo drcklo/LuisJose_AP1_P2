@@ -110,14 +110,15 @@
         </div>
     </div>
 </EditForm>
+
 @code
 {
     [Parameter]
+    public int EntradaID { get; set; }
     public Entradas entradas { get; set; } = new Entradas();
     public Productos productos { get; set; } = new Productos();
     public EntradasDetalle entradasDetalle { get; set; } = new EntradasDetalle();
     public List<Productos> ListaProductos { get; set; } = new List<Productos>();
-    public int EntradaId { get; set; }
     public int Total { get; set; } = 0;
     public int Cantidad { get; set; }
 
@@ -130,9 +131,9 @@
             ListaProductos = productos;
         }
 
-        if (EntradaId > 0)
+        if (EntradaID > 0)
         {
-            this.entradas.EntradaID = EntradaId;
+            this.entradas.EntradaID = EntradaID;
             this.Buscar();
         }
     }

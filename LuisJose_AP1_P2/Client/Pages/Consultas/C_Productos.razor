@@ -1,5 +1,30 @@
-﻿<h3>C_Productos</h3>
+﻿@page "/C_Productos"
+@inject HttpClient httpClient
 
-@code {
 
+
+
+@code
+{
+    public Productos productos { get; set; } = new Productos();
+    public List<Productos> ListaProductos { get; set; } = new List<Productos>();
+    public int Cuenta { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var productos = await httpClient.GetFromJsonAsync<List<Productos>>("api/Productos");
+
+        if (productos is not null)
+        {
+            ListaProductos = productos;
+        }
+    }
+
+    public async Task Buscar()
+    {
+        ListaProductos = await httpClient.GetFromJsonAsync<List<Productos>>($"api/productos");
+
+        Cuenta = ListaProductos != null ? ListaProductos!.Count() : 0;
+        StateHasChanged();
+    }
 }
