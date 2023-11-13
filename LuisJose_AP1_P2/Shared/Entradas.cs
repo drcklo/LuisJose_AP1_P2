@@ -18,7 +18,7 @@ namespace LuisJose_AP1_P2.Shared
 		public string? Concepto { get; set; }
 
 		[Required(ErrorMessage = "El ProductoID es un campo requerido")]
-		public int ProductoId { get; set; }
+		public int ProductoID { get; set; }
 
 		[Required(ErrorMessage = "Se requiere especificar la cantidad producida")]
 		public int CantidadProducida { get; set; }

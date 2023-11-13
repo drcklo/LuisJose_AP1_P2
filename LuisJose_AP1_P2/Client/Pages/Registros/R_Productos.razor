@@ -1,20 +1,125 @@
-﻿@inject HttpClient httpClient
+﻿@page "/R_Productos"
+@page "/R_Productos/{EntradaID:int?}"
+@inject HttpClient httpClient
 @inject NotificationService notificationService
 
-<h3>R_Productos</h3>
+<EditForm Model="entradas" OnValidSubmit="Guardar">
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h3 class="mb-0">Entradas de productos</h3>
+            </div>
+            <div class="card-body">
+                <label>ID:</label>
+                <div class="input-group mb-3">
+                    <InputNumber @bind-Value="entradas.EntradaID" class="form-control" aria-describedby="BotonBuscar" />
+                    <button @onclick="Buscar" class="btn btn-outline-primary" type="button" id="BotonBuscar"><i class="oi oi-magnifying-glass" /></button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nombres:</label>
+                    <InputDate @bind-Value="entradas.Fecha" class="form-control"></InputDate>
+                    <ValidationMessage For="@(() => entradas.Fecha)" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="Concepto">Concepto:</label>
+                    <InputText @bind-Value="entradas.Concepto" class="form-control" />
+                    <ValidationMessage For="@(() => entradas.Concepto)" />
+                </div>
+                <fieldset>
+                    <legend>Utilizados</legend>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Producto: </label>
+                            <InputSelect @bind-Value="entradasDetalle.ProductoID" class="form-select">
+                                <option value="@entradas.ProductoID" hidden="hidden">Seleccione un producto</option>
+                                @foreach (var item in L_Productos)
+                                {
+                                    <option value="@item.ProductoID">@item.Descripción</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => entradasDetalle.ProductoID)" />
+                        </div>
 
+                        <div class="col-md-5">
+                            <label>Cantidad</label>
+                            <div class="input-group">
+                                <InputNumber @bind-Value="entradasDetalle.CantidadUtilizada" class="form-control">
+                                </InputNumber>
+                                <button type="button" class="btn btn-success" @onclick="AgregarDetalle">Agregar <i class="oi oi-plus" /></button>
+                                <ValidationMessage For="@(() => entradasDetalle.CantidadUtilizada)" />
+                            </div>
+                        </div>
+                    </div>
 
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto ID</th>
+                                <th>Descripcion</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
 
+                        <tbody>
+
+                            @foreach (var item in this.entradas.entradasDetalle)
+                            {
+                                <tr>
+                                    <td>@item.ProductoID</td>
+                                    <td>@GetDescripción(item.ProductoID)</td>
+                                    <td>@item.CantidadUtilizada</td>
+                                    <td><button type="button" class="btn btn-danger" @onclick=@(() => EliminarDetalle(item))><i class="oi oi-trash" /></button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-md">
+                            <label>Total:</label>
+                            <input disabled @bind-value="Total" class="form-control" />
+                        </div>
+                    </div>
+                </fieldset>
+                <hr>
+                <fieldset>
+                    <legend>Producido</legend>
+                    <div class="row">
+                        <div class="col-3">
+                            <select @bind="entradas.ProductoID" class="form-control">
+                                @foreach (var item in L_Productos)
+                                {
+                                    <option value="@item.ProductoID">@item.Descripción</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-2">
+                            <input @bind-value="entradas.CantidadProducida" disabled class="form-control" placeholder="Cantidad Producida" />
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="card-footer d-flex justify-content-center">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" @onclick="Limpiar">Nuevo <i class="oi oi-file" /></button>
+                    <button type="submit" class="btn btn-success">Guardar <i class="oi oi-document" /></button>
+                    <button type="button" class="btn btn-danger" @onclick="Eliminar">Eliminar <i class="oi oi-trash" /></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
 @code
 {
     [Parameter]
-    public int EntradaID { get; set; }
     public Entradas entradas { get; set; } = new Entradas();
     public Productos productos { get; set; } = new Productos();
     public EntradasDetalle entradasDetalle { get; set; } = new EntradasDetalle();
+    public List<Productos> L_Productos { get; set; } = new List<Productos>();
+    public int EntradaId { get; set; }
     public int Total { get; set; } = 0;
     public int Cantidad { get; set; }
-    public List<Productos> L_Productos { get; set; } = new List<Productos>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -25,9 +130,9 @@
             L_Productos = productos;
         }
 
-        if (EntradaID > 0)
+        if (EntradaId > 0)
         {
-            this.entradas.EntradaID = EntradaID;
+            this.entradas.EntradaID = EntradaId;
             this.Buscar();
         }
     }
@@ -100,9 +205,9 @@
         }
     }
 
-    private async Task<Productos> BuscarEntradas(int ProductoId)
+    private async Task<Productos> BuscarEntradas(int ProductoID)
     {
-        var producto = await httpClient.GetFromJsonAsync<Productos>($"api/Productos/{ProductoId}");
+        var producto = await httpClient.GetFromJsonAsync<Productos>($"api/Productos/{ProductoID}");
 
         if (producto == null)
         {
@@ -118,7 +223,7 @@
         {
             return false;
         }
-        if (entradas.ProductoId < 0)
+        if (entradas.ProductoID < 0)
         {
             return false;
         }
@@ -165,12 +270,13 @@
                     Nuevo();
                     var mensaje = new NotificationMessage
                         {
-                            Severity = NotificationSeverity.Error,
+                            Severity = NotificationSeverity.Success,
                             Summary = "Guardado con éxito",
                             Detail = "Su producto ha sido guardado",
                             Duration = 4_000
                         };
                     notificationService.Notify(mensaje);
+
                 }
                 else
                 {
@@ -206,6 +312,7 @@
         {
             if (!response.IsSuccessStatusCode)
             {
+
                 var mensaje = new NotificationMessage
                     {
                         Severity = NotificationSeverity.Error,
@@ -214,6 +321,7 @@
                         Duration = 4_000
                     };
                 notificationService.Notify(mensaje);
+                return;
             }
             else
             {
@@ -244,6 +352,7 @@
                         Duration = 4_000
                     };
                 notificationService.Notify(mensaje);
+                return;
             }
 
             var producto = await BuscarEntradas(entradasDetalle.ProductoID);
@@ -261,6 +370,8 @@
                             Detail = "La cantidad que quiere de este producto no está disponible",
                             Duration = 4_000
                         };
+                    notificationService.Notify(mensaje);
+                    return;
                 }
 
                 entradasDetalle.EntradaID = entradas.EntradaID;
@@ -285,7 +396,7 @@
         entradas.CantidadProducida = Total * 2;
     }
 
-    public string ObtenerDescripcion(int Id)
+    public string GetDescripción(int Id)
     {
         return L_Productos.Where(p => p.ProductoID == Id).FirstOrDefault().Descripción;
     }

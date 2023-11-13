@@ -33,7 +33,7 @@ namespace LuisJose_AP1_P2.Server.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProductoId")
+                    b.Property<int>("ProductoID")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("EntradaID");

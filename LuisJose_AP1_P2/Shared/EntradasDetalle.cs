@@ -17,6 +17,7 @@ namespace LuisJose_AP1_P2.Shared
 		public int ProductoID { get; set; }
 
 		[Required(ErrorMessage = "Se requiere especificar la cantidad utilizada")]
+		[Range(1, int.MaxValue, ErrorMessage ="El valor debe ser mayor de 0")]
 		public int CantidadUtilizada { get; set; }
 	}
 }

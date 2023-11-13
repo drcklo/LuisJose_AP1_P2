@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LuisJose_AP1_P2.Server.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20231109052750_Inicial")]
+    [Migration("20231113195829_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -36,7 +36,7 @@ namespace LuisJose_AP1_P2.Server.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProductoId")
+                    b.Property<int>("ProductoID")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("EntradaID");
