@@ -2,7 +2,37 @@
 @inject HttpClient httpClient
 
 
+<label>ID</label>
+<div class="input-group">
+    <InputNumber @bind-Value="productos.ProductoID" class="form-control"></InputNumber>
+    <button type="button" class="btn btn-outline-primary oi oi-magnifying-glass" @onclick="Buscar"></button>
+</div>
 
+@if (ListaProductos != null)
+{
+    <table class="table table-bordered">
+        <thead>
+        <th>Producto ID</th>
+        <th>Descripcion</th>
+        <th>Precio de Compra</th>
+        <th>Precio de Venta</th>
+        <th>Existencia</th>
+        </thead>
+
+        <tbody>
+            @foreach (var item in ListaProductos)
+            {
+                <tr>
+                    <th>@item.ProductoID</th>
+                    <th>@item.Descripción</th>
+                    <th>@item.PrecioCompra</th>
+                    <th>@item.PrecioVenta</th>
+                    <th>@item.Existencia</th>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code
 {
