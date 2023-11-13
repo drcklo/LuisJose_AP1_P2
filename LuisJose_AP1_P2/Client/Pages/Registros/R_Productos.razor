@@ -32,7 +32,7 @@
                             <label>Producto: </label>
                             <InputSelect @bind-Value="entradasDetalle.ProductoID" class="form-select">
                                 <option value="@entradas.ProductoID" hidden="hidden">Seleccione un producto</option>
-                                @foreach (var item in L_Productos)
+                                @foreach (var item in ListaProductos)
                                 {
                                     <option value="@item.ProductoID">@item.Descripción</option>
                                 }
@@ -87,7 +87,7 @@
                     <div class="row">
                         <div class="col-3">
                             <select @bind="entradas.ProductoID" class="form-control">
-                                @foreach (var item in L_Productos)
+                                @foreach (var item in ListaProductos)
                                 {
                                     <option value="@item.ProductoID">@item.Descripción</option>
                                 }
@@ -116,7 +116,7 @@
     public Entradas entradas { get; set; } = new Entradas();
     public Productos productos { get; set; } = new Productos();
     public EntradasDetalle entradasDetalle { get; set; } = new EntradasDetalle();
-    public List<Productos> L_Productos { get; set; } = new List<Productos>();
+    public List<Productos> ListaProductos { get; set; } = new List<Productos>();
     public int EntradaId { get; set; }
     public int Total { get; set; } = 0;
     public int Cantidad { get; set; }
@@ -127,7 +127,7 @@
 
         if (productos is not null)
         {
-            L_Productos = productos;
+            ListaProductos = productos;
         }
 
         if (EntradaId > 0)
@@ -398,6 +398,6 @@
 
     public string GetDescripción(int Id)
     {
-        return L_Productos.Where(p => p.ProductoID == Id).FirstOrDefault().Descripción;
+        return ListaProductos.Where(p => p.ProductoID == Id).FirstOrDefault().Descripción;
     }
 }

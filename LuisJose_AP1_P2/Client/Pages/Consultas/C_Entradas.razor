@@ -1,0 +1,47 @@
+﻿@page "/C_Entradas"
+@inject HttpClient httpClient
+@inject NotificationService notificationService
+
+
+
+@code
+{
+    public Entradas entradas { get; set; } = new Entradas();
+    public List<Entradas> ListaEntradas { get; set; } = new List<Entradas>();
+    public int Cuenta { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var entrada = await httpClient.GetFromJsonAsync<List<Entradas>>($"api/Entradas");
+
+        if (entrada is null)
+        {
+            var mensaje = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "No se encuentran entradas",
+                    Detail = "Ingrese entradas nuevas antes de buscar",
+                    Duration = 4_000
+                };
+            notificationService.Notify(mensaje);
+        }
+        if (entrada is not null)
+        {
+            ListaEntradas = entrada;
+        }
+    }
+
+    public async Task Buscar()
+    {
+        ListaEntradas = await httpClient.GetFromJsonAsync<List<Entradas>>($"api/Entradas");
+
+        Cuenta = ListaEntradas != null ? ListaEntradas!.Count() : 0;
+        StateHasChanged();
+    }
+
+    public void Limpiar()
+    {
+        entradas = new Entradas();
+        ListaEntradas.Clear();
+    }
+}
