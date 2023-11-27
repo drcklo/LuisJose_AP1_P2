@@ -7,6 +7,26 @@
         <h3>Consulta de Entradas</h3>
     </div>
 
+    <div class="input-group-text">
+
+        <label class="form-control-label col-1">Desde:</label>
+        <div class="col-3">
+            <input class="form-control" type="date" @bind="Desde" />
+        </div>
+
+        <label class="form-control-label col-1">Hasta:</label>
+        <div class="col-3">
+            <input class="form-control" type="date" @bind="Hasta" />
+        </div>
+
+        <div class="col-5">
+            <button type="button" @onclick="Buscar" class="btn btn-primary">
+                <i class="oi oi-magnifying-glass" />
+            </button>
+        </div>
+
+    </div>
+
     <div class="card-body">
         <div class="row">
             <button type="button" @onclick="Buscar" class="btn btn-primary input-group-text">
@@ -33,7 +53,7 @@
                             <th>@entrada.Fecha</th>
                             <th>@entrada.Concepto</th>
                             <th>@entrada.CantidadProducida</th>
-                            <th><a href="RegistroProductos/@entrada.EntradaID"><span class="oi oi-eye"></span></a></th>
+                            <th><a href="R_Productos/@entrada.EntradaID"><span class="oi oi-eye"></span></a></th>
                         </tr>
                     }
 
@@ -57,6 +77,9 @@
     public Entradas entradas { get; set; } = new Entradas();
     public List<Entradas> ListaEntradas { get; set; } = new List<Entradas>();
     public int Cuenta { get; set; }
+    public DateTime Desde { get; set; }
+    public DateTime Hasta { get; set; }
+    public int Filtro { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,6 +100,10 @@
         {
             ListaEntradas = entrada;
         }
+
+        Desde = DateTime.Now.AddMonths(-1);
+        Hasta = DateTime.Now;
+        await Buscar();
     }
 
     public async Task Buscar()

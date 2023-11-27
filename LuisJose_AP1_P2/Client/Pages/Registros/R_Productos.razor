@@ -16,7 +16,7 @@
                     <button @onclick="Buscar" class="btn btn-outline-primary" type="button" id="BotonBuscar"><i class="oi oi-magnifying-glass" /></button>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Nombres:</label>
+                    <label class="form-label">Fecha:</label>
                     <InputDate @bind-Value="entradas.Fecha" class="form-control"></InputDate>
                     <ValidationMessage For="@(() => entradas.Fecha)" />
                 </div>
@@ -318,7 +318,7 @@
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error al eliminar",
-                        Detail = "No hay productos a eliminar",
+                        Detail = "No hay entradas a eliminar",
                         Duration = 4_000
                     };
                 notificationService.Notify(mensaje);
@@ -331,7 +331,7 @@
                     {
                         Severity = NotificationSeverity.Info,
                         Summary = "Eliminado con exito",
-                        Detail = "El producto fue eliminado con exito",
+                        Detail = "LA entrada fue eliminada con exito",
                         Duration = 4_000
                     };
                 notificationService.Notify(mensaje);
@@ -384,7 +384,7 @@
                     Suma += item.CantidadUtilizada;
                     Total = Suma;
                 }
-                entradas.CantidadProducida = Total * 2;
+                entradas.CantidadProducida = Total;
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿@page "/C_Productos"
 @inject HttpClient httpClient
+@inject NotificationService notificationService
 
 
 <label>ID</label>
@@ -34,11 +35,16 @@
     </table>
 }
 
-@code
-{
+@code {
+
+    [Parameter]
+    public int EntradaID { get; set; }
+    public Entradas entradas { get; set; } = new Entradas();
     public Productos productos { get; set; } = new Productos();
+    public EntradasDetalle entradasDetalle { get; set; } = new EntradasDetalle();
     public List<Productos> ListaProductos { get; set; } = new List<Productos>();
-    public int Cuenta { get; set; }
+    public int Total { get; set; } = 0;
+    public int Cantidad { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,13 +54,275 @@
         {
             ListaProductos = productos;
         }
+
+        if (EntradaID > 0)
+        {
+            this.entradas.EntradaID = EntradaID;
+            this.Buscar();
+        }
     }
 
-    public async Task Buscar()
+    public void Nuevo()
     {
-        ListaProductos = await httpClient.GetFromJsonAsync<List<Productos>>($"api/productos");
+        this.entradas = new Entradas();
+        Total = 0;
+    }
 
-        Cuenta = ListaProductos != null ? ListaProductos!.Count() : 0;
-        StateHasChanged();
+    public void Limpiar()
+    {
+        this.entradas = new Entradas();
+        Total = 0;
+        var mensaje = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Info,
+                Summary = "Nuevo Ejecutado",
+                Detail = "Campos limipiados correctamente",
+                Duration = 4_000
+            };
+        notificationService.Notify(mensaje);
+    }
+
+    public async Task<bool> Buscar()
+    {
+        try
+        {
+            var entradaEncontrada = await httpClient.GetFromJsonAsync<Entradas>($"api/Entradas/{entradas.EntradaID}");
+
+            if (entradaEncontrada != null)
+            {
+                int Suma = 0;
+                this.entradas = entradaEncontrada;
+                this.entradas.entradasDetalle = entradaEncontrada.entradasDetalle.ToList();
+
+                foreach (var item in entradas.entradasDetalle)
+                {
+                    Suma += item.CantidadUtilizada;
+                    Total = Suma;
+                }
+
+                StateHasChanged();
+                var mensaje = new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Bien!",
+                        Detail = "Su valor ha sido encontrado",
+                        Duration = 4_000
+                    };
+                notificationService.Notify(mensaje);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch
+        {
+            var mensaje = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Vaya...",
+                    Detail = "Al parecer esa entrada no existe",
+                    Duration = 4_000
+                };
+            notificationService.Notify(mensaje);
+            return false;
+        }
+    }
+
+    private async Task<Productos> BuscarEntradas(int ProductoID)
+    {
+        var producto = await httpClient.GetFromJsonAsync<Productos>($"api/Productos/{ProductoID}");
+
+        if (producto == null)
+        {
+            return new Productos();
+        }
+
+        return producto;
+    }
+
+    public bool Validar()
+    {
+        if (string.IsNullOrEmpty(entradas.Concepto))
+        {
+            return false;
+        }
+        if (entradas.ProductoID < 0)
+        {
+            return false;
+        }
+        if (entradas.CantidadProducida < 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public bool ValidarDetalle()
+    {
+        if (entradasDetalle.ProductoID < 0)
+        {
+            return false;
+        }
+        if (entradasDetalle.CantidadUtilizada < 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public async Task Guardar()
+    {
+        entradas.entradasDetalle = this.entradas.entradasDetalle.ToList();
+        using var response = await httpClient.PostAsJsonAsync("api/Entradas", entradas);
+
+        if (Validar())
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                var entradaDevuelta = await response.Content.ReadFromJsonAsync<Entradas>();
+
+                if (entradaDevuelta is not null)
+                {
+                    this.entradas = entradaDevuelta;
+                    Nuevo();
+                    var mensaje = new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Success,
+                            Summary = "Guardado con éxito",
+                            Detail = "Su producto ha sido guardado",
+                            Duration = 4_000
+                        };
+                    notificationService.Notify(mensaje);
+
+                }
+                else
+                {
+                    var mensaje = new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Algo ha salido mal",
+                            Detail = "No puedes guardar con campos vacíos",
+                            Duration = 4_000
+                        };
+                    notificationService.Notify(mensaje);
+                }
+            }
+            else
+            {
+                var mensaje = new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Algo ha salido mal",
+                        Detail = "Su entrada no fue valida, intente de nuevo",
+                        Duration = 4_000
+                    };
+                notificationService.Notify(mensaje);
+            }
+        }
+    }
+
+    public async Task Eliminar()
+    {
+        using var response = await httpClient.DeleteAsync($"api/Entradas/{entradas.EntradaID}");
+
+        if (Validar())
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+
+                var mensaje = new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error al eliminar",
+                        Detail = "No hay productos a eliminar",
+                        Duration = 4_000
+                    };
+                notificationService.Notify(mensaje);
+                return;
+            }
+            else
+            {
+                Nuevo();
+                var mensaje = new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Info,
+                        Summary = "Eliminado con exito",
+                        Detail = "El producto fue eliminado con exito",
+                        Duration = 4_000
+                    };
+                notificationService.Notify(mensaje);
+            }
+        }
+    }
+
+    public async Task AgregarDetalle()
+    {
+        if (ValidarDetalle())
+        {
+            if (entradasDetalle.CantidadUtilizada <= 0)
+            {
+                var mensaje = new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Valor no posible",
+                        Detail = "La cantidad deseada debe ser mayor a 0",
+                        Duration = 4_000
+                    };
+                notificationService.Notify(mensaje);
+                return;
+            }
+
+            var producto = await BuscarEntradas(entradasDetalle.ProductoID);
+
+            if (entradas != null)
+            {
+                int Suma = 0;
+
+                if (entradasDetalle.CantidadUtilizada > producto.Existencia)
+                {
+                    var mensaje = new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "No disponible",
+                            Detail = "La cantidad que quiere de este producto no está disponible",
+                            Duration = 4_000
+                        };
+                    notificationService.Notify(mensaje);
+                    return;
+                }
+
+                entradasDetalle.EntradaID = entradas.EntradaID;
+                entradas.entradasDetalle.Add(entradasDetalle);
+                entradasDetalle = new EntradasDetalle();
+
+                foreach (var item in entradas.entradasDetalle)
+                {
+                    Suma += item.CantidadUtilizada;
+                    Total = Suma;
+                }
+                entradas.CantidadProducida = Total * 2;
+            }
+        }
+    }
+
+    public void EliminarDetalle(EntradasDetalle detalle)
+    {
+        this.entradas.entradasDetalle.Remove(detalle);
+
+        Total = this.entradas.entradasDetalle.Sum(t => t.CantidadUtilizada);
+        entradas.CantidadProducida = Total * 2;
+    }
+
+    public string GetDescripción(int Id)
+    {
+        return ListaProductos.Where(p => p.ProductoID == Id).FirstOrDefault().Descripción;
     }
 }
